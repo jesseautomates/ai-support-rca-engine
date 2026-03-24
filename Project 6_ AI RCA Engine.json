@@ -1,0 +1,826 @@
+{
+  "name": "Project 6: AI RCA Engine",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -672,
+        32
+      ],
+      "id": "a0766a0b-2a55-45a7-b62a-14b2b58adb72",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1wjvgvDtUiMuqhlwteJtoYPPaq5aSjKHAiOhtiTBJF8E",
+          "mode": "list",
+          "cachedResultName": "Sample Tickets - RCA Build",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wjvgvDtUiMuqhlwteJtoYPPaq5aSjKHAiOhtiTBJF8E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sample Tickets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wjvgvDtUiMuqhlwteJtoYPPaq5aSjKHAiOhtiTBJF8E/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -448,
+        32
+      ],
+      "id": "5378745f-0833-4764-81f1-a8df4aabc08f",
+      "name": "Pull Sample Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LVNXkiWCtMmqZPCG",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "206ae300-ae3e-408b-a169-e8c87b82a480",
+              "name": "ticket_id",
+              "value": "={{$json.ticket_id}}",
+              "type": "string"
+            },
+            {
+              "id": "e17eb11c-2eef-423b-aaee-d1ef6c63c933",
+              "name": "created_at",
+              "value": "={{$json.created_at}}",
+              "type": "string"
+            },
+            {
+              "id": "074847c3-b80b-4317-9443-e6fec08dd247",
+              "name": "subject",
+              "value": "={{$json.subject}}",
+              "type": "string"
+            },
+            {
+              "id": "0fcc8dbf-c6ee-4cc8-b811-ca27aa39ef55",
+              "name": "description",
+              "value": "={{$json.description}}",
+              "type": "string"
+            },
+            {
+              "id": "286daa0f-9bb1-4f19-a9a9-26e25eee34ae",
+              "name": "category",
+              "value": "={{$json.category}}",
+              "type": "string"
+            },
+            {
+              "id": "7d81468e-aa97-4f5c-b02d-ef08c988ecec",
+              "name": "priority",
+              "value": "={{$json.priority}}",
+              "type": "string"
+            },
+            {
+              "id": "c9466583-a0dc-49e5-8621-4219f2c5d8dd",
+              "name": "sentiment",
+              "value": "={{$json.sentiment}}",
+              "type": "string"
+            },
+            {
+              "id": "ff775d6d-cefc-4960-a11b-b7d6d202fc78",
+              "name": "escalation_flag",
+              "value": "={{$json.escalation_flag}}",
+              "type": "string"
+            },
+            {
+              "id": "e30ae0df-46c3-4471-a5a6-e3a51276d98e",
+              "name": "sla_breach",
+              "value": "={{$json.sla_breach}}",
+              "type": "string"
+            },
+            {
+              "id": "4ebe72c3-6aca-49a2-a8da-ff8b164bd4dd",
+              "name": "resolution_notes",
+              "value": "={{$json.resolution_notes}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -224,
+        -40
+      ],
+      "id": "1da72f21-ea0f-4bcb-82db-692c169d4a4d",
+      "name": "Normalize the Data"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are an expert Support Operations Root Cause Analyst.\n\nYour job is to review a closed support ticket and determine the SINGLE most likely root cause based only on the ticket details provided.\n\nYou must follow these rules:\n1. Choose exactly one root cause bucket from the allowed list.\n2. Do not invent new bucket names.\n3. Base your decision on the subject, description, metadata, and resolution notes.\n4. If the evidence is weak or unclear, choose the closest matching bucket or use \"Unknown / Other\".\n5. Return valid JSON only.\n6. Do not include markdown, explanations outside JSON, or extra text.\n\nAllowed root cause buckets:\n- Authentication Service Bug\n- Billing Configuration Error\n- User Permissions Misconfiguration\n- Integration Failure\n- API Defect\n- Notification Failure\n- Frontend UI Bug\n- Backend Processing Error\n- Data Sync Issue\n- Reporting Logic Error\n- Workflow Automation Failure\n- Knowledge Gap / User Error\n- Third-Party Vendor Issue\n- Unknown / Other\n\nReturn JSON in exactly this structure:\n{\n  \"root_cause_bucket\": \"one allowed value from the list above\",\n  \"confidence\": \"High\" or \"Medium\" or \"Low\",\n  \"reasoning\": \"brief explanation of why this bucket is the best fit\",\n  \"recommended_action\": \"brief recommendation for what team should investigate or improve\"\n}"
+            },
+            {
+              "content": "=Analyze the following support ticket and identify the single most likely root cause.\n\nTicket details:\nTicket ID: {{$json.ticket_id}}\nCreated At: {{$json.created_at}}\nSubject: {{$json.subject}}\nDescription: {{$json.description}}\nCategory: {{$json.category}}\nPriority: {{$json.priority}}\nSentiment: {{$json.sentiment}}\nEscalation Flag: {{$json.escalation_flag}}\nSLA Breach: {{$json.sla_breach}}\nResolution Notes: {{$json.resolution_notes}}\n\nRemember:\n- Select exactly one root cause bucket from the allowed list\n- Do not create a new bucket\n- Return valid JSON only"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        -112
+      ],
+      "id": "0aee150f-bfbc-471a-8e39-974543e0a0f0",
+      "name": "AI - RCA Builder",
+      "credentials": {
+        "openAiApi": {
+          "id": "D3Bq5fVbo9iaERbW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  try {\n    const rawText =\n      item.json.output?.[0]?.content?.[0]?.text || '';\n\n    const parsed = JSON.parse(rawText);\n\n    return {\n      json: {\n        ...item.json,\n        root_cause_bucket: parsed.root_cause_bucket || null,\n        confidence: parsed.confidence || null,\n        reasoning: parsed.reasoning || null,\n        recommended_action: parsed.recommended_action || null,\n        parse_success: true,\n      }\n    };\n  } catch (error) {\n    return {\n      json: {\n        ...item.json,\n        root_cause_bucket: null,\n        confidence: null,\n        reasoning: null,\n        recommended_action: null,\n        parse_success: false,\n        parse_error: error.message,\n      }\n    };\n  }\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        -112
+      ],
+      "id": "b56dc176-5cd4-4b33-b2a1-932c5efd4353",
+      "name": "Parse AI Response"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        576,
+        -40
+      ],
+      "id": "9af38d14-f311-4896-a0a3-a8d5876230b9",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f6fb9760-552e-45c1-881d-ab166d5e8951",
+              "name": "ticket_id",
+              "value": "={{$json.ticket_id}}",
+              "type": "string"
+            },
+            {
+              "id": "08c8bc5e-d682-46c4-87e3-816afd8d05d5",
+              "name": "created_at",
+              "value": "={{$json.created_at}}",
+              "type": "string"
+            },
+            {
+              "id": "3f4ba886-b813-4985-89c5-602eec7b6cdc",
+              "name": "subject",
+              "value": "={{$json.subject}}",
+              "type": "string"
+            },
+            {
+              "id": "0447c951-ebfa-4652-b813-1cd5355d69e5",
+              "name": "description",
+              "value": "={{$json.description}}",
+              "type": "string"
+            },
+            {
+              "id": "f6345dc1-8734-47ce-9ef0-7b2988206dcf",
+              "name": "category",
+              "value": "={{$json.category}}",
+              "type": "string"
+            },
+            {
+              "id": "f4741f88-7b6d-4f70-becc-3d976994923d",
+              "name": "priority",
+              "value": "={{$json.priority}}",
+              "type": "string"
+            },
+            {
+              "id": "5fb1fd77-395c-4ea4-b111-eb4ab9b25685",
+              "name": "escalation_flag",
+              "value": "={{$json.escalation_flag}}",
+              "type": "string"
+            },
+            {
+              "id": "25851507-50a3-4941-bb05-a7a25eabd352",
+              "name": "sla_breach",
+              "value": "={{$json.sla_breach}}",
+              "type": "string"
+            },
+            {
+              "id": "76f3d930-e82d-4f71-8159-6bc5e4a132bb",
+              "name": "root_cause_bucket",
+              "value": "={{$json.root_cause_bucket}}",
+              "type": "string"
+            },
+            {
+              "id": "ff43f765-95b1-445a-981c-b413c1d36382",
+              "name": "confidence",
+              "value": "={{$json.confidence}}",
+              "type": "string"
+            },
+            {
+              "id": "82226665-85de-45d4-944d-2c696ba9f5d6",
+              "name": "reasoning",
+              "value": "={{$json.reasoning}}",
+              "type": "string"
+            },
+            {
+              "id": "def0ee81-a5e6-44ea-bbc4-afac86a0f078",
+              "name": "recommended_action",
+              "value": "={{$json.recommended_action}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        -40
+      ],
+      "id": "4d9050d1-e071-4906-a2bb-346f1fa037c5",
+      "name": "Normalize It All"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "57005597-dbbb-4b0a-adda-6aa8e0de1df6",
+              "name": "true_root_cause",
+              "value": "={{$json.true_root_cause}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        176
+      ],
+      "id": "a3ff8f54-23e2-4ff2-a542-2addce1196ab",
+      "name": "True Root Cause"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1024,
+        32
+      ],
+      "id": "30214c28-9417-43d3-b3bb-0da6198c0a41",
+      "name": "Bring back the OG Root Cause"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const predicted = (item.json.root_cause_bucket || '').trim().toLowerCase();\n  const actual = (item.json.true_root_cause || '').trim().toLowerCase();\n\n  const isCorrect = predicted === actual;\n\n  return {\n    json: {\n      ...item.json,\n      validation_result: isCorrect ? 'Match' : 'Mismatch',\n      is_correct: isCorrect,\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        32
+      ],
+      "id": "42777137-7928-4f67-ac29-e775c2393031",
+      "name": "Make sure AI and Known Match"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7e8b1aea-1832-4481-984a-38d15745e25f",
+              "leftValue": "={{$json.is_correct}}",
+              "rightValue": "False",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1696,
+        32
+      ],
+      "id": "8fb7dcc7-fb2f-45f9-bbab-1b2c8bd30a89",
+      "name": "Show me the Matches"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1wjvgvDtUiMuqhlwteJtoYPPaq5aSjKHAiOhtiTBJF8E",
+          "mode": "list",
+          "cachedResultName": "Sample Tickets - RCA Build",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wjvgvDtUiMuqhlwteJtoYPPaq5aSjKHAiOhtiTBJF8E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1422538061,
+          "mode": "list",
+          "cachedResultName": "Manual RCA Review",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wjvgvDtUiMuqhlwteJtoYPPaq5aSjKHAiOhtiTBJF8E/edit#gid=1422538061"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ticket_id": "={{ $json.ticket_id }}",
+            "created_at": "={{ $json.created_at }}",
+            "subject": "={{ $json.subject }}",
+            "description": "={{ $json.description }}",
+            "category": "={{ $json.category }}",
+            "priority": "={{ $json.priority }}",
+            "sla_breach": "={{ $json.sla_breach }}",
+            "root_cause_bucket": "={{ $json.root_cause_bucket }}",
+            "true_root_cause": "={{ $json.true_root_cause }}",
+            "reasoning": "={{ $json.reasoning }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ticket_id",
+              "displayName": "ticket_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sla_breach",
+              "displayName": "sla_breach",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "root_cause_bucket",
+              "displayName": "root_cause_bucket",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "true_root_cause",
+              "displayName": "true_root_cause",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "reasoning",
+              "displayName": "reasoning",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1920,
+        200
+      ],
+      "id": "c8d1454b-4fe7-405f-b076-ad563a92762f",
+      "name": "Log the Mismatches for Human Review",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LVNXkiWCtMmqZPCG",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const totalTickets = items.length;\n\nconst bucketCounts = {};\n\nfor (const item of items) {\n  const bucket = item.json.root_cause_bucket || 'Unknown';\n\n  if (!bucketCounts[bucket]) {\n    bucketCounts[bucket] = 0;\n  }\n\n  bucketCounts[bucket]++;\n}\n\n// Optional: sort buckets by count (highest first)\nconst sortedBuckets = Object.entries(bucketCounts)\n  .sort((a, b) => b[1] - a[1])\n  .map(([bucket, count]) => ({ bucket, count }));\n\nreturn [\n  {\n    json: {\n      total_matched_tickets: totalTickets,\n      root_cause_summary: sortedBuckets\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        -112
+      ],
+      "id": "75e1746c-31f0-4d13-95cc-5bafdcee0815",
+      "name": "Summarize the Matches"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  let updatedRootCause = item.json.root_cause_bucket;\n\n  if (updatedRootCause === 'Billing Configuration Error') {\n    updatedRootCause = 'Billing System Issue';\n  }\n\n  return {\n    json: {\n      ...item.json,\n      root_cause_bucket: updatedRootCause\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        32
+      ],
+      "id": "54c41c10-4a73-419e-8e1e-aaf4df6cf102",
+      "name": "Fix Similar Root Causes"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2144,
+        -40
+      ],
+      "id": "7519a704-98de-48fe-894a-c4604ecf80bc",
+      "name": "Merge Summary and Ticket Data"
+    },
+    {
+      "parameters": {
+        "jsCode": "const summary = items.find(i => i.json.root_cause_summary)?.json;\n\nconst tickets = items\n  .filter(i => i.json.ticket_id)\n  .map(i => i.json);\n\nreturn [\n  {\n    json: {\n      total_matched_tickets: summary?.total_matched_tickets || 0,\n      root_cause_summary: summary?.root_cause_summary || [],\n      tickets: tickets\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2368,
+        -40
+      ],
+      "id": "4bf0fcfb-426d-4492-a4b7-f076522e2e1a",
+      "name": "Bring it All Together"
+    },
+    {
+      "parameters": {
+        "sendTo": "snow.jesse19@gmail.com",
+        "subject": "Weekly AI RCA Summary – Validated Support Trends",
+        "message": "=<div style=\"font-family: Arial, sans-serif; background:#f5f7fb; padding:20px;\">\n  <div style=\"max-width:700px; margin:auto; background:white; padding:25px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.08); color:#1f2937;\">\n\n    <h2 style=\"margin-top:0; color:#111827;\">Weekly Support RCA Summary</h2>\n\n    <p style=\"font-size:14px; line-height:1.6; color:#374151;\">\n      Here is your weekly Support RCA summary, summarizing key trends and actionable insights from this week’s support activity.\n    </p>\n\n    <div style=\"margin-top:24px;\">\n      <h3 style=\"font-size:16px; margin-bottom:12px; color:#111827;\">📊 Overview</h3>\n\n      <div style=\"display:flex; gap:10px; flex-wrap:wrap;\">\n        <div style=\"flex:1; min-width:180px; background:#eef2ff; padding:14px; border-radius:8px; text-align:center;\">\n          <div style=\"font-size:22px; font-weight:bold;\">50</div>\n          <div style=\"font-size:12px; color:#6b7280;\">Total Tickets Reviewed</div>\n        </div>\n\n        <div style=\"flex:1; min-width:180px; background:#ecfdf5; padding:14px; border-radius:8px; text-align:center;\">\n          <div style=\"font-size:22px; font-weight:bold;\">{{$json.total_matched_tickets}}</div>\n          <div style=\"font-size:12px; color:#6b7280;\">Matched to Known Root Causes</div>\n        </div>\n\n        <div style=\"flex:1; min-width:180px; background:#fef2f2; padding:14px; border-radius:8px; text-align:center;\">\n          <div style=\"font-size:22px; font-weight:bold;\">{{50 - $json.total_matched_tickets}}</div>\n          <div style=\"font-size:12px; color:#6b7280;\">Requiring Further Review</div>\n        </div>\n      </div>\n\n      <p style=\"margin-top:16px; font-size:14px; line-height:1.6; color:#374151;\">\n        Known root causes accounted for <strong>{{ Math.round(($json.total_matched_tickets / 50) * 100) }}%</strong> of total tickets reviewed this week, highlighting clear opportunities for targeted remediation and automation.\n      </p>\n    </div>\n\n    <div style=\"margin-top:28px;\">\n      <h3 style=\"font-size:16px; margin-bottom:10px; color:#111827;\">🔁 Root Cause Breakdown</h3>\n      <p style=\"font-size:14px; color:#374151;\">The following known issues were identified across this week’s tickets:</p>\n      <ul style=\"padding-left:20px; font-size:14px; line-height:1.8; color:#374151;\">\n        {{ $json.root_cause_summary.map(function(rc) { return \"<li><strong>\" + rc.bucket + \"</strong>: \" + rc.count + \" tickets</li>\"; }).join(\"\") }}\n      </ul>\n    </div>\n\n    <div style=\"margin-top:28px;\">\n      <h3 style=\"font-size:16px; margin-bottom:10px; color:#111827;\">⚙️ Recommended Focus</h3>\n      <ul style=\"padding-left:20px; font-size:14px; line-height:1.8; color:#374151;\">\n        {{ $json.root_cause_summary.map(function(rc, index) {\n          return \"<li>\" + (index === 0 ? \"Prioritize\" : \"Investigate\") + \" <strong>\" + rc.bucket + \"</strong> as it accounted for \" + rc.count + \" matched tickets this week</li>\";\n        }).join(\"\") }}\n        <li>Assess unmatched tickets for potential new root cause categories</li>\n      </ul>\n    </div>\n\n    <div style=\"margin-top:28px;\">\n      <h3 style=\"font-size:16px; margin-bottom:10px; color:#111827;\">💡 Summary</h3>\n      <p style=\"font-size:14px; line-height:1.6; color:#374151;\">\n        This analysis helps us quickly identify repeat issues, prioritize engineering efforts, and ensure we are addressing the most impactful problems affecting our users.\n      </p>\n    </div>\n\n    <p style=\"margin-top:28px; font-size:14px; line-height:1.6; color:#374151;\">\n      Please reach out if you’d like a deeper breakdown ahead of the weekly support review.\n    </p>\n\n    <p style=\"margin-top:24px; font-size:14px; color:#374151;\">\n      Best,<br>\n      Jesse\n    </p>\n\n  </div>\n</div>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2592,
+        -40
+      ],
+      "id": "c95f4cab-0de9-4bc5-a13a-a72dc3e16077",
+      "name": "Alert Leadership Weekly Recap",
+      "webhookId": "20e3e190-40a5-4057-8dda-60cbc9f9b917",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Nn3HWWGahIyP6so3",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "snow.jesse19@gmail.com",
+        "subject": "Weekly RCA Review Queue Ready",
+        "message": "=<div style=\"font-family: Arial, sans-serif; background:#f5f7fb; padding:20px;\">\n  <div style=\"max-width:680px; margin:auto; background:#ffffff; padding:24px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.08); color:#1f2937;\">\n\n    <h2 style=\"margin:0 0 16px 0; font-size:28px; color:#111827;\">Manual RCA Review Queue Ready</h2>\n\n    <p style=\"margin:0 0 16px 0; font-size:14px; line-height:1.6; color:#374151;\">\n      Hi Support Manager,\n    </p>\n\n    <p style=\"margin:0 0 20px 0; font-size:14px; line-height:1.6; color:#374151;\">\n      The weekly RCA review has been completed, and the manual review queue is ready.\n      The queue contains <strong>{{ $items().length }}</strong> tickets that did not match existing root causes.\n    </p>\n\n    <div style=\"margin:0 0 24px 0;\">\n      <h3 style=\"margin:0 0 12px 0; font-size:16px; color:#111827;\">📊 Summary</h3>\n\n      <div style=\"display:flex; gap:10px; flex-wrap:wrap;\">\n        <div style=\"flex:1; min-width:180px; background:#eef2ff; padding:14px; border-radius:8px; text-align:center;\">\n          <div style=\"font-size:22px; font-weight:bold;\">50</div>\n          <div style=\"font-size:12px; color:#6b7280;\">Total Tickets Reviewed</div>\n        </div>\n\n        <div style=\"flex:1; min-width:180px; background:#fef2f2; padding:14px; border-radius:8px; text-align:center;\">\n          <div style=\"font-size:22px; font-weight:bold;\">{{ $items().length }}</div>\n          <div style=\"font-size:12px; color:#6b7280;\">Requiring Human Review</div>\n        </div>\n\n        <div style=\"flex:1; min-width:180px; background:#ecfdf5; padding:14px; border-radius:8px; text-align:center;\">\n          <div style=\"font-size:22px; font-weight:bold;\">{{ 50 - $items().length }}</div>\n          <div style=\"font-size:12px; color:#6b7280;\">Matched to Known Root Causes</div>\n        </div>\n      </div>\n    </div>\n\n    <div style=\"margin:0 0 24px 0;\">\n      <h3 style=\"margin:0 0 10px 0; font-size:16px; color:#111827;\">⚙️ Review Guidance</h3>\n      <ul style=\"margin:0; padding-left:20px; font-size:14px; line-height:1.8; color:#374151;\">\n        <li>Determine whether these tickets represent new root cause categories</li>\n        <li>Identify whether updates are needed to the existing RCA library</li>\n        <li>Flag any cases that require escalation for further investigation</li>\n      </ul>\n    </div>\n\n    <p style=\"margin:0 0 20px 0; font-size:14px; line-height:1.6; color:#374151;\">\n      Please review the mismatch log ahead of the weekly support meeting.\n    </p>\n\n    <p style=\"margin:0; font-size:14px; line-height:1.6; color:#374151;\">\n      Best,<br>\n      Jesse\n    </p>\n\n  </div>\n</div>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2144,
+        200
+      ],
+      "id": "a2f4cc8b-46be-4bba-acea-75419606ae3f",
+      "name": "Send a message",
+      "webhookId": "73863273-b13d-41b3-91c8-442139b94c91",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Nn3HWWGahIyP6so3",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Pull Sample Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pull Sample Data": {
+      "main": [
+        [
+          {
+            "node": "Normalize the Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "True Root Cause",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize the Data": {
+      "main": [
+        [
+          {
+            "node": "AI - RCA Builder",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "AI - RCA Builder": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Normalize It All",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize It All": {
+      "main": [
+        [
+          {
+            "node": "Bring back the OG Root Cause",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "True Root Cause": {
+      "main": [
+        [
+          {
+            "node": "Bring back the OG Root Cause",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Bring back the OG Root Cause": {
+      "main": [
+        [
+          {
+            "node": "Fix Similar Root Causes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make sure AI and Known Match": {
+      "main": [
+        [
+          {
+            "node": "Show me the Matches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Show me the Matches": {
+      "main": [
+        [
+          {
+            "node": "Summarize the Matches",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Summary and Ticket Data",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Log the Mismatches for Human Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fix Similar Root Causes": {
+      "main": [
+        [
+          {
+            "node": "Make sure AI and Known Match",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize the Matches": {
+      "main": [
+        [
+          {
+            "node": "Merge Summary and Ticket Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Summary and Ticket Data": {
+      "main": [
+        [
+          {
+            "node": "Bring it All Together",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bring it All Together": {
+      "main": [
+        [
+          {
+            "node": "Alert Leadership Weekly Recap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alert Leadership Weekly Recap": {
+      "main": [
+        []
+      ]
+    },
+    "Log the Mismatches for Human Review": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6b341cd2-1774-4ce3-ad29-0854f52edd49",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c92027905a1e18f4de6a84dda63aebe0847ce19b98965b0a947a038cf40b6d42"
+  },
+  "id": "Z8KpJJEO5vhMTHsO",
+  "tags": []
+}

@@ -1,0 +1,56 @@
+ticket_id,created_at,subject,description,category,priority,sentiment,escalation_flag,sla_breach,resolution_notes,true_root_cause
+TCK-001,2026-03-01,Cannot log into account,Getting invalid credentials even after reset,Login,High,Negative,TRUE,FALSE,Password reset attempted issue persists,Authentication Service Bug
+TCK-002,2026-03-01,Login not working,Stuck in login loop after entering credentials,Login,High,Negative,TRUE,TRUE,User unable to access account escalated,Authentication Service Bug
+TCK-003,2026-03-02,Password reset failing,Reset link does not work,Login,Medium,Negative,FALSE,FALSE,User retried multiple times,Authentication Service Bug
+TCK-004,2026-03-02,Can’t sign in,Login fails after entering correct password,Account,High,Negative,TRUE,FALSE,Escalated to engineering,Authentication Service Bug
+TCK-005,2026-03-03,Login error,Invalid credentials error appears,Login,High,Negative,TRUE,TRUE,Multiple users impacted,Authentication Service Bug
+TCK-006,2026-03-03,Account access issue,Unable to log in after password reset,Login,Medium,Negative,FALSE,FALSE,Resolved after backend fix,Authentication Service Bug
+TCK-007,2026-03-04,Login keeps failing,Credentials not accepted,Login,High,Negative,TRUE,FALSE,Escalated to backend team,Authentication Service Bug
+TCK-008,2026-03-04,Sign in problem,Login page refreshes repeatedly,Login,Medium,Negative,FALSE,FALSE,User cleared cache no success,Authentication Service Bug
+TCK-009,2026-03-05,Login blocked,Account locked after multiple attempts,Security,Medium,Neutral,FALSE,FALSE,User unlocked account,Authentication Service Bug
+TCK-010,2026-03-05,Unable to access account,Login not working on mobile,Login,High,Negative,TRUE,TRUE,Mobile login bug suspected,Authentication Service Bug
+TCK-011,2026-03-06,Sign in error,Invalid credentials despite correct info,Login,High,Negative,TRUE,FALSE,Escalated to dev team,Authentication Service Bug
+TCK-012,2026-03-06,Login glitch,Login button does nothing,Login,Medium,Negative,FALSE,FALSE,Frontend issue suspected,Authentication Service Bug
+,,,,,,,,,,
+TCK-013,2026-03-01,Charged twice,Billed two times for same subscription,Billing,High,Negative,TRUE,FALSE,Refund requested,Billing System Issue
+TCK-014,2026-03-01,Unexpected charge,Was billed after cancellation,Billing,High,Negative,TRUE,TRUE,Escalated to billing team,Billing System Issue
+TCK-015,2026-03-02,Refund request,Want refund for duplicate charge,Billing,Medium,Negative,FALSE,FALSE,Refund processed,Billing System Issue
+TCK-016,2026-03-02,Subscription not canceled,Still getting billed after canceling,Billing,High,Negative,TRUE,TRUE,Cancelation bug identified,Billing System Issue
+TCK-017,2026-03-03,Double billing,Charged twice this month,Billing,High,Negative,TRUE,FALSE,Investigating duplicate invoices,Billing System Issue
+TCK-018,2026-03-03,Incorrect charge,Billed wrong amount,Billing,Medium,Negative,FALSE,FALSE,Adjusted billing manually,Billing System Issue
+TCK-019,2026-03-04,Payment issue,Payment processed twice,Billing,High,Negative,TRUE,TRUE,Multiple users impacted,Billing System Issue
+TCK-020,2026-03-04,Refund delay,Refund taking too long,Billing,Medium,Neutral,FALSE,FALSE,Pending processing,Billing System Issue
+TCK-021,2026-03-05,Subscription confusion,Not sure why I was billed,Billing,Low,Neutral,FALSE,FALSE,Explained billing cycle,Billing System Issue
+TCK-022,2026-03-05,Billing error,Charged after trial ended incorrectly,Billing,High,Negative,TRUE,FALSE,Escalated to finance,Billing System Issue
+,,,,,,,,,,
+TCK-023,2026-03-01,File upload failing,Upload stops at 90 percent,Upload,High,Negative,TRUE,TRUE,Escalated to engineering,File Upload Failure
+TCK-024,2026-03-01,Upload error,Cannot upload documents,Upload,High,Negative,TRUE,FALSE,User retried issue persists,File Upload Failure
+TCK-025,2026-03-02,Files not saving,Upload fails randomly,Upload,Medium,Negative,FALSE,FALSE,Investigating backend issue,File Upload Failure
+TCK-026,2026-03-02,Upload stuck,Progress bar freezes,Upload,High,Negative,TRUE,TRUE,Known bug identified,File Upload Failure
+TCK-027,2026-03-03,Upload problem,Files not uploading at all,Upload,High,Negative,TRUE,FALSE,Escalated to storage team,File Upload Failure
+TCK-028,2026-03-03,Document upload error,Error appears during upload,Upload,Medium,Negative,FALSE,FALSE,Retry recommended,File Upload Failure
+TCK-029,2026-03-04,Upload timeout,Upload times out,Upload,High,Negative,TRUE,TRUE,Server latency suspected,File Upload Failure
+TCK-030,2026-03-04,File upload glitch,Upload completes but file missing,Upload,Medium,Negative,FALSE,FALSE,Data sync issue,File Upload Failure
+TCK-031,2026-03-05,Cannot attach file,Attachment fails to upload,Upload,High,Negative,TRUE,FALSE,Escalated,File Upload Failure
+TCK-032,2026-03-05,Upload incomplete,File only partially uploads,Upload,Medium,Negative,FALSE,FALSE,User retried,File Upload Failure
+,,,,,,,,,,
+TCK-033,2026-03-02,App is slow,Pages take forever to load,Performance,Medium,Negative,FALSE,FALSE,Monitoring performance,Latency Issue
+TCK-034,2026-03-03,Slow response,App responds slowly,Performance,Medium,Negative,FALSE,FALSE,No clear issue found,Latency Issue
+TCK-035,2026-03-04,Timeout error,Request times out frequently,Performance,High,Negative,TRUE,FALSE,Escalated to infra,Latency Issue
+TCK-036,2026-03-05,Performance lag,Slow loading dashboard,Performance,Low,Neutral,FALSE,FALSE,User cleared cache,Latency Issue
+TCK-037,2026-03-05,System slow,General slowness reported,General,Low,Neutral,FALSE,FALSE,Monitoring,Latency Issue
+,,,,,,,,,,
+TCK-038,2026-03-01,Change password,How do I update my password,General,Low,Neutral,FALSE,FALSE,Provided instructions,None
+TCK-039,2026-03-02,Feature request,Can you add dark mode,Feature,Low,Positive,FALSE,FALSE,Logged request,None
+TCK-040,2026-03-03,Account question,How do I update profile info,General,Low,Neutral,FALSE,FALSE,Provided guidance,None
+TCK-041,2026-03-04,General inquiry,What features are included,General,Low,Neutral,FALSE,FALSE,Responded,None
+TCK-042,2026-03-05,Support question,How to export data,General,Low,Neutral,FALSE,FALSE,Sent instructions,None
+TCK-043,2026-03-05,Help needed,Need help with settings,General,Low,Neutral,FALSE,FALSE,Assisted,None
+TCK-044,2026-03-06,UI feedback,The UI looks great,Feedback,Low,Positive,FALSE,FALSE,Noted,None
+TCK-045,2026-03-06,Password change,Want to update password,General,Low,Neutral,FALSE,FALSE,Guided,None
+,,,,,,,,,,
+TCK-046,2026-03-01,test,test,Test,Low,Neutral,FALSE,FALSE,None,None
+TCK-047,2026-03-02,asdf,asdfasdf,Test,Low,Neutral,FALSE,FALSE,None,None
+TCK-048,2026-03-03,blank,,Test,Low,Neutral,FALSE,FALSE,None,None
+TCK-049,2026-03-04,duplicate ticket,duplicate ticket,Test,Low,Neutral,FALSE,FALSE,None,None
+TCK-050,2026-03-05,spam,click this link now!!!,Spam,Low,Negative,FALSE,FALSE,None,None
